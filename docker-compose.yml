@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  # Service 1: The Web Application
+  webapp:
+    build: .
+    container_name: cafe-webapp
+    ports:
+      - "8080:80"
+    restart: always
+    networks:
+      - cafe-network
+
+  # Service 2: The Mock Database (Redis)
+  # Added to satisfy "Multi-Service" and "Backend/DB" requirement
+  db-cache:
+    image: redis:alpine
+    container_name: cafe-db
+    ports:
+      - "6379:6379"
+    networks:
+      - cafe-network
+
+networks:
+  cafe-network:
+    driver: bridge

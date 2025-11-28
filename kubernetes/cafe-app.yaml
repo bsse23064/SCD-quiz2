@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cafe-deployment
+  labels:
+    app: cafe-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cafe-app
+  template:
+    metadata:
+      labels:
+        app: cafe-app
+    spec:
+      containers:
+      - name: cafe-container
+        image: mhamza0987/cafe-app:v1
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cafe-service
+spec:
+  type: NodePort
+  selector:
+    app: cafe-app
+  ports:
+    - port: 80
+      targetPort: 80
+      # NodePort 30007 allows access via http://localhost:30007 (Minikube/Docker Desktop)
+      nodePort: 30007
