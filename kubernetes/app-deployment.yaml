@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: fortune-app
-        image: mhamza0987/devops-fortune:v2
+        image: mhamza0987/devops-fortune:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
