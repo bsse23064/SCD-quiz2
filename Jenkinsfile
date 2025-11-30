@@ -2,21 +2,21 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'mhamza0987/devops-fortune'
+        DOCKER_IMAGE = 'mhamza0987/devops-fortune' 
         registryCredential = 'dockerhub-creds-id'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/bsse23064/SCD-quiz2.git'
+                checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build(DOCKER_IMAGE + ":${env.BUILD_NUMBER}")
+                    dockerImage = docker.build(DOCKER_IMAGE + ":v${env.BUILD_NUMBER}")
                 }
             }
         }
@@ -32,10 +32,10 @@ pipeline {
             }
         }
 
-        stage('Deploy to K8s') {
+        stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f kubernetes/redis-deployment.yaml'
-                sh "kubectl set image deployment/fortune-app fortune-app=${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                sh 'kubectl apply -f kubernetes/app-deployment.yaml'
+                sh "kubectl set image deployment/fortune-app fortune-app=${DOCKER_IMAGE}:v${env.BUILD_NUMBER}"
                 sh 'kubectl rollout status deployment/fortune-app'
             }
         }
