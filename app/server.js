@@ -34,7 +34,7 @@ app.get('/', async (req, res) => {
         <html>
         <head>
             <style>
-                body { font-family: 'Courier New', monospace; background: #222; color: #0f0; text-align: center; padding-top: 50px; }
+                body { font-family: 'Courier New', monospace; background: #560db7ff; color: #0f0; text-align: center; padding-top: 50px; }
                 .box { border: 2px solid #0f0; display: inline-block; padding: 20px; box-shadow: 0 0 10px #0f0; }
                 h1 { font-size: 20px; }
                 h2 { font-size: 30px; margin: 20px 0; }
