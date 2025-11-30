@@ -2,65 +2,42 @@ pipeline {
     agent any
 
     environment {
-        // Replace with your DockerHub username
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-id')
-        IMAGE_NAME = "mhamza0987/cafe-app"
-        IMAGE_TAG = "v${BUILD_NUMBER}"
+        DOCKER_IMAGE = 'mhamza0987/devops-fortune'
+        registryCredential = 'dockerhub-creds-id'
     }
 
     stages {
-        stage('Checkout Source') {
+        stage('Checkout') {
             steps {
-                echo 'Checking out source code from Git...'
-                checkout scm
+                git branch: 'main', url: 'https://github.com/bsse23064/SCD-quiz2.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo 'Building Docker Image...'
-                    sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
+                    dockerImage = docker.build(DOCKER_IMAGE + ":${env.BUILD_NUMBER}")
                 }
             }
         }
 
-        stage('Login to Docker Hub') {
+        stage('Push to Hub') {
             steps {
                 script {
-                    echo 'Logging into Docker Hub...'
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                        dockerImage.push('latest')
+                    }
                 }
             }
         }
 
-        stage('Push Image') {
+        stage('Deploy to K8s') {
             steps {
-                script {
-                    echo 'Pushing image to Docker Hub...'
-                    sh "docker push $IMAGE_NAME:$IMAGE_TAG"
-                }
+                sh 'kubectl apply -f kubernetes/redis-deployment.yaml'
+                sh "kubectl set image deployment/fortune-app fortune-app=${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                sh 'kubectl rollout status deployment/fortune-app'
             }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    echo 'Deploying to Kubernetes...'
-                    // Updates the image in the deployment to the new tag we just built
-                    sh "kubectl set image deployment/cafe-deployment cafe-container=$IMAGE_NAME:$IMAGE_TAG"
-                    sh "kubectl rollout status deployment/cafe-deployment"
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline successfully completed. Cafe is live!'
-        }
-        failure {
-            echo 'Pipeline failed.'
         }
     }
 }

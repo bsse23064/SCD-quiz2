@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fortune-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fortune-app
+  template:
+    metadata:
+      labels:
+        app: fortune-app
+    spec:
+      containers:
+      - name: fortune-app
+        image: mhamza0987/devops-fortune:v2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: REDIS_HOST
+          value: "redis-db"

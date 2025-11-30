@@ -1,26 +1,30 @@
 version: '3.8'
 
 services:
-  # Service 1: The Web Application
-  webapp:
-    build: .
-    container_name: cafe-webapp
+  app:
+    build: ./app
     ports:
-      - "8080:80"
-    restart: always
+      - "3000:3000"
+    environment:
+      - REDIS_HOST=redis_db
+    depends_on:
+      - redis_db
     networks:
-      - cafe-network
+      - devops-net
 
-  # Service 2: The Mock Database (Redis)
-  # Added to satisfy "Multi-Service" and "Backend/DB" requirement
-  db-cache:
+  redis_db:
     image: redis:alpine
-    container_name: cafe-db
+    container_name: redis_container
     ports:
       - "6379:6379"
     networks:
-      - cafe-network
+      - devops-net
+    volumes:
+      - redis-data:/data
 
 networks:
-  cafe-network:
+  devops-net:
     driver: bridge
+
+volumes:
+  redis-data:
