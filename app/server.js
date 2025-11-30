@@ -42,7 +42,7 @@ app.get('/', async (req, res) => {
         </head>
         <body>
             <div class="box">
-                <h1>DEV_SOLUTIONS_LTD TERMINAL [Version 3.0]</h1>
+                <h1>DEV_SOLUTIONS_LTD TERMINAL [Final Production]</h1>
                 <hr>
                 <h2>"${randomFortune}"</h2>
                 <p>Fortunes Revealed: ${count}</p>
